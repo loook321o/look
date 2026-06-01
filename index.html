@@ -3,48 +3,350 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>أوقات الصلاة بالمملكة العربية السعودية</title>
 
 <style>
+
+:root{
+--primary:#0f7b4d;
+--secondary:#ffffff;
+--gold:#d4af37;
+--bg:#f5f7fa;
+--card:#ffffff;
+--shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
 body{
-    font-family: Tahoma, Arial, sans-serif;
-    background:#0f172a;
-    color:white;
-    text-align:center;
-    padding:40px;
+font-family:Tahoma, Arial, sans-serif;
+background:var(--bg);
+color:#222;
+}
+
+header{
+background:linear-gradient(135deg,#0f7b4d,#075e3b);
+color:white;
+padding:40px 20px;
+text-align:center;
+}
+
+header h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+header p{
+opacity:.9;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.top-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+margin-top:-30px;
 }
 
 .card{
-    max-width:700px;
-    margin:auto;
-    background:#1e293b;
-    border-radius:20px;
-    padding:30px;
+background:var(--card);
+border-radius:20px;
+padding:20px;
+box-shadow:var(--shadow);
 }
 
-h1{
-    color:#22c55e;
+.card-title{
+font-size:14px;
+color:#777;
+margin-bottom:10px;
 }
+
+.clock{
+font-size:34px;
+font-weight:bold;
+color:var(--primary);
+}
+
+.date{
+font-size:18px;
+line-height:1.8;
+}
+
+.selects{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-top:25px;
+}
+
+select{
+padding:14px;
+border-radius:12px;
+border:1px solid #ddd;
+font-size:16px;
+width:100%;
+}
+
+.prayer-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+margin-top:30px;
+}
+
+.prayer-card{
+background:white;
+border-radius:18px;
+padding:25px;
+text-align:center;
+box-shadow:var(--shadow);
+transition:.3s;
+}
+
+.prayer-card:hover{
+transform:translateY(-5px);
+}
+
+.prayer-name{
+font-size:18px;
+margin-bottom:12px;
+}
+
+.prayer-time{
+font-size:26px;
+font-weight:bold;
+color:var(--primary);
+}
+
+.footer{
+margin-top:50px;
+padding:25px;
+text-align:center;
+background:white;
+border-top:1px solid #eee;
+}
+
+.footer a{
+color:#0f7b4d;
+font-weight:bold;
+text-decoration:none;
+}
+
+@media(max-width:700px){
+
+.selects{
+grid-template-columns:1fr;
+}
+
+header h1{
+font-size:24px;
+}
+
+.clock{
+font-size:28px;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<header>
 
 <h1>
 🕌 أوقات الصلاة بالمملكة العربية السعودية
 </h1>
 
 <p>
-تم إنشاء الموقع بنجاح عبر GitHub Pages
+مواقيت الصلاة والتقويم الهجري والميلادي
 </p>
 
+</header>
+
+<div class="container">
+
+<div class="top-grid">
+
+<div class="card">
+
+<div class="card-title">
+الوقت الحالي
+</div>
+
+<div id="clock" class="clock">
+00:00:00
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+التاريخ الميلادي
+</div>
+
+<div id="gregorianDate" class="date">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+التاريخ الهجري
+</div>
+
+<div id="hijriDate" class="date">
+--
+</div>
+
+</div>
+
+</div>
+
+<div class="selects">
+
+<select id="region">
+<option>القصيم</option>
+<option>الرياض</option>
+<option>مكة المكرمة</option>
+<option>المدينة المنورة</option>
+<option>المنطقة الشرقية</option>
+<option>عسير</option>
+<option>تبوك</option>
+<option>حائل</option>
+<option>جازان</option>
+<option>نجران</option>
+<option>الباحة</option>
+<option>الجوف</option>
+<option>الحدود الشمالية</option>
+</select>
+
+<select id="city">
+<option>بريدة</option>
+</select>
+
+</div>
+
+<div class="prayer-grid">
+
+<div class="prayer-card">
+<div class="prayer-name">الفجر</div>
+<div id="fajr" class="prayer-time">--:--</div>
+</div>
+
+<div class="prayer-card">
+<div class="prayer-name">الشروق</div>
+<div id="sunrise" class="prayer-time">--:--</div>
+</div>
+
+<div class="prayer-card">
+<div class="prayer-name">الظهر</div>
+<div id="dhuhr" class="prayer-time">--:--</div>
+</div>
+
+<div class="prayer-card">
+<div class="prayer-name">العصر</div>
+<div id="asr" class="prayer-time">--:--</div>
+</div>
+
+<div class="prayer-card">
+<div class="prayer-name">المغرب</div>
+<div id="maghrib" class="prayer-time">--:--</div>
+</div>
+
+<div class="prayer-card">
+<div class="prayer-name">العشاء</div>
+<div id="isha" class="prayer-time">--:--</div>
+</div>
+
+</div>
+
+<div class="footer">
+
 <p>
-المرحلة الأولى جاهزة
+تم تصميمه من قبل فاعل خير
+</p>
+
+<br>
+
+<p>
+ولا تنسَ التصدق اليوم عبر
+<a href="https://ehsan.sa/" target="_blank">
+إحسان
+</a>
 </p>
 
 </div>
+
+</div>
+
+<script>
+
+function updateClock(){
+
+const now=new Date();
+
+document.getElementById("clock").innerHTML=
+now.toLocaleTimeString(
+'ar-SA',
+{
+timeZone:'Asia/Riyadh'
+}
+);
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+function updateDates(){
+
+const now=new Date();
+
+document.getElementById(
+'gregorianDate'
+).innerHTML=
+now.toLocaleDateString(
+'ar-SA',
+{
+weekday:'long',
+year:'numeric',
+month:'long',
+day:'numeric'
+}
+);
+
+document.getElementById(
+'hijriDate'
+).innerHTML=
+now.toLocaleDateString(
+'ar-SA-u-ca-islamic-umalqura',
+{
+year:'numeric',
+month:'long',
+day:'numeric'
+}
+);
+
+}
+
+updateDates();
+
+</script>
 
 </body>
 </html>

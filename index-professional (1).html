@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>أوقات الصلاة بالمملكة العربية السعودية</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--text:#fff;--accent:#22c55e}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{padding:25px;text-align:center;background:linear-gradient(135deg,#0f7b4d,#064e3b)}
+.container{max-width:1200px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
+.card{background:var(--card);padding:18px;border-radius:18px}
+select,button{padding:12px;border-radius:10px;border:none}
+.prayer{font-size:26px;font-weight:bold;color:var(--accent)}
+footer{text-align:center;padding:25px}
+a{color:#4ade80}
+.theme-bar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+</style>
+</head>
+<body>
+<header>
+<h1>🕌 أوقات الصلاة بالمملكة العربية السعودية</h1>
+<p>مواقيت الصلاة - التقويم الهجري - القبلة - الأذكار</p>
+</header>
+
+<div class="container">
+
+<div class="theme-bar">
+<button onclick="theme('sa')">🇸🇦 سعودي</button>
+<button onclick="theme('night')">🌙 ليلي</button>
+<button onclick="theme('gold')">🕌 إسلامي فاخر</button>
+<button onclick="theme('glass')">✨ زجاجي</button>
+<button onclick="toggleLang()">AR/EN</button>
+</div>
+
+<div class="grid">
+<div class="card"><div id="clock"></div></div>
+<div class="card"><div id="dateG"></div></div>
+<div class="card"><div id="dateH"></div></div>
+<div class="card">رمضان بعد <span id="ramadan"></span> يوم</div>
+</div>
+
+<br>
+
+<div class="grid">
+<div class="card">
+<select id="region"></select>
+</div>
+<div class="card">
+<select id="city"></select>
+</div>
+</div>
+
+<br>
+
+<div class="grid">
+<div class="card"><div>الفجر</div><div class="prayer" id="Fajr">--</div></div>
+<div class="card"><div>الشروق</div><div class="prayer" id="Sunrise">--</div></div>
+<div class="card"><div>الظهر</div><div class="prayer" id="Dhuhr">--</div></div>
+<div class="card"><div>العصر</div><div class="prayer" id="Asr">--</div></div>
+<div class="card"><div>المغرب</div><div class="prayer" id="Maghrib">--</div></div>
+<div class="card"><div>العشاء</div><div class="prayer" id="Isha">--</div></div>
+</div>
+
+<br>
+
+<div class="card">
+<h3>الصلاة القادمة</h3>
+<div id="nextPrayer">--</div>
+<div id="countdown">--</div>
+</div>
+
+<br>
+
+<div class="card">
+<h3>📿 ذكر</h3>
+<div id="thikr"></div>
+</div>
+
+<br>
+
+<div class="card">
+<h3>🧭 اتجاه القبلة التقريبي</h3>
+<div>اتجه نحو الجنوب الغربي تقريباً من معظم مناطق المملكة.</div>
+</div>
+
+</div>
+
+<footer>
+<p>تم تصميمه من قبل فاعل خير</p>
+<p>ولا تنسَ التصدق اليوم عبر <a href="https://ehsan.sa/" target="_blank">إحسان</a></p>
+</footer>
+
+<script>
+const regions={
+"الرياض":["Riyadh","Al Kharj","Majmaah"],
+"مكة المكرمة":["Makkah","Jeddah","Taif"],
+"المدينة المنورة":["Madinah","Yanbu"],
+"القصيم":["Buraydah","Unaizah","Ar Rass"],
+"المنطقة الشرقية":["Dammam","Khobar","Jubail"],
+"عسير":["Abha","Khamis Mushait"],
+"تبوك":["Tabuk"],
+"حائل":["Hail"],
+"جازان":["Jazan"],
+"نجران":["Najran"],
+"الباحة":["Al Bahah"],
+"الجوف":["Sakaka"],
+"الحدود الشمالية":["Arar"]
+};
+
+const region=document.getElementById('region');
+const city=document.getElementById('city');
+
+Object.keys(regions).forEach(r=>{
+ let o=document.createElement('option');
+ o.textContent=r;
+ region.appendChild(o);
+});
+
+function loadCities(){
+ city.innerHTML='';
+ regions[region.value].forEach(c=>{
+  let o=document.createElement('option');
+  o.value=c;o.textContent=c;
+  city.appendChild(o);
+ });
+ getPrayerTimes();
+}
+
+region.onchange=loadCities;
+city.onchange=getPrayerTimes;
+
+async function getPrayerTimes(){
+ try{
+ const url=`https://api.aladhan.com/v1/timingsByCity?city=${city.value}&country=Saudi%20Arabia&method=4`;
+ const r=await fetch(url);
+ const d=await r.json();
+ const t=d.data.timings;
+ ["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"].forEach(x=>{
+  document.getElementById(x).textContent=t[x];
+ });
+ nextPrayerCalc(t);
+ }catch(e){console.log(e)}
+}
+
+function nextPrayerCalc(t){
+ const names=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+ const now=new Date();
+ let next="لا توجد";
+ for(let n of names){
+  let p=t[n].split(":");
+  let d=new Date();
+  d.setHours(+p[0],+p[1],0,0);
+  if(d>now){next=n;break;}
+ }
+ document.getElementById("nextPrayer").textContent=next;
+}
+
+function tick(){
+ let n=new Date();
+ document.getElementById('clock').textContent=n.toLocaleTimeString('ar-SA',{timeZone:'Asia/Riyadh'});
+ document.getElementById('dateG').textContent=n.toLocaleDateString('ar-SA');
+ document.getElementById('dateH').textContent=n.toLocaleDateString('ar-SA-u-ca-islamic-umalqura');
+}
+setInterval(tick,1000);tick();
+
+const adhkar=[
+"سبحان الله وبحمده",
+"لا إله إلا الله وحده لا شريك له",
+"استغفر الله وأتوب إليه",
+"اللهم صل وسلم على نبينا محمد"
+];
+function thikr(){document.getElementById('thikr').textContent=adhkar[Math.floor(Math.random()*adhkar.length)]}
+thikr();setInterval(thikr,15000);
+
+function theme(t){
+ if(t=="sa"){document.documentElement.style.cssText="--bg:#f5f5f5;--card:#fff;--text:#111;--accent:#0f7b4d"}
+ if(t=="night"){document.documentElement.style.cssText="--bg:#0f172a;--card:#1e293b;--text:#fff;--accent:#38bdf8"}
+ if(t=="gold"){document.documentElement.style.cssText="--bg:#102a1c;--card:#1d3b2b;--text:#fff;--accent:#d4af37"}
+ if(t=="glass"){document.documentElement.style.cssText="--bg:#dbeafe;--card:rgba(255,255,255,.5);--text:#111;--accent:#7c3aed"}
+}
+
+function toggleLang(){alert("يمكن تطوير الترجمة الكاملة لاحقاً");}
+
+function ramadanCounter(){
+ const target=new Date("2027-02-08");
+ const days=Math.ceil((target-new Date())/86400000);
+ document.getElementById("ramadan").textContent=days>0?days:0;
+}
+ramadanCounter();
+
+loadCities();
+</script>
+</body>
+</html>

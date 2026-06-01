@@ -1,41 +1,207 @@
-جهزت لك ملف النسخة الاحترافية الأولية الجاهزة للرفع على GitHub Pages:
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أوقات الصلاة بالمملكة العربية السعودية</title>
 
-📄 **تحميل الملف:**
+<style>
+body{
+margin:0;
+font-family:Tahoma,Arial,sans-serif;
+background:#0f172a;
+color:white;
+}
 
-[تحميل index-professional.html](sandbox:/mnt/data/index-professional.html)
+header{
+background:#065f46;
+padding:25px;
+text-align:center;
+}
 
-يحتوي على:
+.container{
+max-width:1100px;
+margin:auto;
+padding:20px;
+}
 
-* 🕌 واجهة حديثة
-* 🇸🇦 مناطق المملكة الـ13
-* 🏙️ مدن مرتبطة بالمناطق
-* ⏰ ساعة مباشرة
-* 📅 تاريخ ميلادي وهجري
-* 🕋 جلب مواقيت الصلاة من AlAdhan API
-* 🔔 الصلاة القادمة
-* 📿 أذكار متغيرة
-* 🎨 4 ثيمات
-* 💚 رابط إحسان
-* 📱 متوافق مع الجوال والكمبيوتر
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:16px;
+margin-bottom:15px;
+}
 
-### بعد التحميل
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
+}
 
-1. افتح الملف.
-2. انسخ محتواه بالكامل.
-3. افتح `index.html` في GitHub.
-4. احذف المحتوى القديم.
-5. الصق محتوى الملف.
-6. اضغط **Commit changes**.
+.prayer-time{
+font-size:28px;
+font-weight:bold;
+color:#22c55e;
+}
 
-إذا أردت النسخة المتقدمة جداً (عدة آلاف الأسطر) مع:
+select{
+width:100%;
+padding:12px;
+border-radius:10px;
+font-size:16px;
+}
 
-* جميع مدن المملكة تقريباً
-* ترجمة عربية/إنجليزية كاملة
-* عداد صلاة فعلي بالثواني
-* اتجاه قبلة بالحساسات
-* عداد الحج ورمضان محسوب هجرياً
-* حفظ الإعدادات
-* PWA وتثبيت كتطبيق جوال
-* إشعارات الأذان
+footer{
+text-align:center;
+padding:30px;
+}
 
-فيمكنني بناء إصدار 3.0 كامل بعد التأكد أن هذه النسخة تعمل على GitHub Pages أولاً.
+a{
+color:#22c55e;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<h1>🕌 أوقات الصلاة بالمملكة العربية السعودية</h1>
+<p>مواقيت الصلاة والتاريخ الهجري</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>الوقت الحالي</h3>
+<div id="clock"></div>
+</div>
+
+<div class="card">
+<h3>التاريخ</h3>
+<div id="gregorian"></div>
+<div id="hijri"></div>
+</div>
+
+<div class="card">
+<label>اختر المدينة:</label>
+<select id="city" onchange="loadPrayerTimes()">
+<option value="Riyadh">الرياض</option>
+<option value="Makkah">مكة المكرمة</option>
+<option value="Madinah">المدينة المنورة</option>
+<option value="Buraydah">بريدة</option>
+<option value="Dammam">الدمام</option>
+<option value="Abha">أبها</option>
+</select>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h3>الفجر</h3>
+<div id="Fajr" class="prayer-time">--:--</div>
+</div>
+
+<div class="card">
+<h3>الشروق</h3>
+<div id="Sunrise" class="prayer-time">--:--</div>
+</div>
+
+<div class="card">
+<h3>الظهر</h3>
+<div id="Dhuhr" class="prayer-time">--:--</div>
+</div>
+
+<div class="card">
+<h3>العصر</h3>
+<div id="Asr" class="prayer-time">--:--</div>
+</div>
+
+<div class="card">
+<h3>المغرب</h3>
+<div id="Maghrib" class="prayer-time">--:--</div>
+</div>
+
+<div class="card">
+<h3>العشاء</h3>
+<div id="Isha" class="prayer-time">--:--</div>
+</div>
+
+</div>
+
+</div>
+
+<footer>
+<p>تم تصميمه من قبل فاعل خير</p>
+<p>
+ولا تنس التصدق اليوم عبر
+<a href="https://ehsan.sa/" target="_blank">إحسان</a>
+</p>
+</footer>
+
+<script>
+
+function updateClock(){
+
+const now = new Date();
+
+document.getElementById("clock").innerHTML =
+now.toLocaleTimeString(
+'ar-SA',
+{
+timeZone:'Asia/Riyadh'
+}
+);
+
+document.getElementById("gregorian").innerHTML =
+now.toLocaleDateString('ar-SA');
+
+document.getElementById("hijri").innerHTML =
+now.toLocaleDateString(
+'ar-SA-u-ca-islamic-umalqura'
+);
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+async function loadPrayerTimes(){
+
+const city =
+document.getElementById("city").value;
+
+try{
+
+const response =
+await fetch(
+`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Saudi%20Arabia&method=4`
+);
+
+const data =
+await response.json();
+
+const t =
+data.data.timings;
+
+document.getElementById("Fajr").innerHTML = t.Fajr;
+document.getElementById("Sunrise").innerHTML = t.Sunrise;
+document.getElementById("Dhuhr").innerHTML = t.Dhuhr;
+document.getElementById("Asr").innerHTML = t.Asr;
+document.getElementById("Maghrib").innerHTML = t.Maghrib;
+document.getElementById("Isha").innerHTML = t.Isha;
+
+}
+catch(error){
+
+console.error(error);
+
+}
+
+}
+
+loadPrayerTimes();
+
+</script>
+
+</body>
+</html>
